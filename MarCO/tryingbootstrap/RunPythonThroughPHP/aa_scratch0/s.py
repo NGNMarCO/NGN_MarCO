@@ -1,0 +1,110 @@
+#algorithm for clustering using one of the above two sp ;)
+def asp_clustering_it(G,g,kk,m):
+	#g = gblock_graph(G)
+	final_list = []
+	while kk > 1:
+		a = asp_clustering0(G,g,kk,m)[0][:]
+		final_list.append(a)
+		#
+		g = gblock_graph(G)
+		for c in final_list:
+			for i in c:
+				n = (i[0],i[1])
+				if n in g.nodes():
+					g.remove_node(n)
+		#
+		kk = kk - 1
+	final_list.append(graph_c_vec(g))
+	return final_list
+
+#algorithm for clustering using one of the above two sp ;)
+def asp_clustering0(G,g,kk,m):
+	#g = gblock_graph(G)
+	final_list = []
+	while kk > 1:
+		if m == 0:
+			a = norm_cls_cool_f_sp(G,g,kk)[0][:]
+		if m == 1:
+			a = norm_cls_cool_f_sp12(G,g,kk)[0][:]
+		if m == 2:
+			a = norm_cls_cool_f_sp21(G,g,kk)[0][:]
+		final_list.append(a)
+		#
+		g = gblock_graph(G)
+		for c in final_list:
+			for i in c:
+				n = (i[0],i[1])
+				if n in g.nodes():
+					g.remove_node(n)
+		#
+		kk = kk - 1
+	final_list.append(graph_c_vec(g))
+	return final_list
+
+#with farest lmnt as com_cl
+def norm_cls_cool_f_sp12(G,g,kk):
+	#initial step
+	P00 = graph_c_vec(g)[:]
+	alpha = akcom0(P00,ran_points(P00,kk),kk,23)[0][1][:]
+	#a = f_com_cl_fill(G,g,alpha)[:]
+	#a = f_com_cl_fill_f(G,g,alpha)[:]
+	a = f_com_cl_fill_f_sp12(G,g,alpha)[:]
+	final_list = []
+	final_list.append(a[0])
+	kk = kk - 1
+	while kk > 1:
+		P00 = graph_c_vec(a[1])[:]
+		alpha = akcom0(P00,ran_points(P00,kk),kk,23)[0][1][:]
+		a = f_com_cl_fill_f_sp12(G,a[1],alpha)[:]
+		final_list.append(a[0])
+		kk = kk - 1
+	final_list.append(graph_c_vec(a[1]))
+	return final_list
+###
+
+
+
+#as before but runs sp distances ;)
+def f_com_cl_fill_f_sp12(G,g,alphagco):
+	cl = f_com_cl(G,g,alphagco)
+	com_cl = centerofmass0(g,cl)
+	cmass = sumofmass_graph(g)/(len(alphagco))
+	#finds the farest from com_cl lmnt of cluster
+	cl_farest_list = []
+	for i in cl:
+		n = (i[0],i[1])
+		cl_farest_list.append([i, nx.dijkstra_path_length(G, source=com_cl, target=n)]) #sp
+		#cl_farest_list.append([i, adistance(com_cl, n)]) #em
+	from operator import itemgetter, attrgetter
+	sorted_cl_farest_list = sorted(cl_farest_list, key=itemgetter(1))
+	nf = sorted_cl_farest_list[len(sorted_cl_farest_list)-1][0]
+	com_cl_farest = (nf[0],nf[1])
+	#creates a list with all the nnnodes of g
+	nnn_l = graph_c_vec(g)[:]
+	#start filling it with lmnts from g.nodes that are not lmnts of it already
+	cl_sp_list = []
+	for i in nnn_l:
+		n = (i[0],i[1])
+		#cl_sp_list.append([i, nx.dijkstra_path_length(G, source=com_cl, target=n)]) #sp
+		cl_sp_list.append([i, adistance(com_cl_farest, n)]) #em
+	from operator import itemgetter, attrgetter
+	sorted_cl_sp_list = sorted(cl_sp_list, key=itemgetter(1))
+	#
+	#creates the correct cluster cl_h
+	cl_h = []
+	s = 0
+	syn = 0
+	for i in range(len(sorted_cl_sp_list)):
+		n = sorted_cl_sp_list.pop(0)[0] #choose the 1st lmnt of the list
+		if s + n[2] <= cmass - 0.01*cmass and syn == 0:
+			cl_h.append(n)
+			s = s + n[2]
+		else:
+			cl_h.append(n)
+			syn = 1
+			break
+	#remove from g the lmnts of cl_h
+	for i in cl_h:
+		n = (i[0],i[1])
+		g.remove_node(n)
+	return[cl_h,g]

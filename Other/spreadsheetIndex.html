@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Reads a JSON file created by the Designer app of Wijmo. Loads the data to a spread sheet (spreadjs). Send requests to the database to get and save more data.  -->
+
+	<!--Wijmo Widgets CSS-->
+    <link href="http://cdn.wijmo.com/themes/aristo/jquery-wijmo.css" rel="stylesheet" type="text/css" />
+
+    <!--SpreadJS Widgets CSS-->
+    <link href="http://cdn.wijmo.com/spreadjs/jquery.wijmo.wijspread.3.20143.15.css" rel="stylesheet" type="text/css" />
+
+    <!--RequireJs-->
+    <script type="text/javascript" src="http://cdn.wijmo.com/external/require.js"></script>
+
+    <script type="text/javascript">
+        requirejs.config({
+            shim: {
+                "spreadjs": {
+                    deps: ["jquery"],
+                }
+            },
+            paths: {
+                "jquery": "http://code.jquery.com/jquery-1.9.1.min",
+                "spreadjs": "http://cdn.wijmo.com/spreadjs/jquery.wijmo.wijspread.all.3.20143.15.min",
+            },
+        });
+        require(["jquery", "spreadjs"], function () {
+            
+			
+			
+			$(document).ready(function () {
+				//Create a spread instance on DIV element which id is 'spreadContainer'
+				$("#ss").wijspread({ sheetCount: 14 });
+				// Obtain spread instance
+				var spread = $("#ss").wijspread("spread");
+				// Get active sheet in spread instance
+				var activeSheet = spread.getActiveSheet();
+				var fullHeight = $(document).height();
+				$("#ss").height(fullHeight);
+				spread.scrollbarMaxAlign(true);
+				spread.scrollbarShowMax(true);
+				
+				// LOAD VALUES FROM JSON FILE XPORTED FROM DESIGNER APP OF WIJMO
+				$.ajax({
+					url: "Rural_BP.ssjson",  
+					datatype: "json",
+					success: function (data) {
+
+						//here to load ssjson file.
+						spread.isPaintSuspended(true);
+						spread.fromJSON(JSON.parse(data));
+						spread.isPaintSuspended(false);
+					},
+					error: function (ex) {
+						alert(ex);
+					}
+				});
+			
+				// GET INPUT DATA FROM DATABASE
+			/*
+				// send AJAX request to get data from database
+				var datastr = 'A';
+				$(document).ready(function(){
+					var scenario = datastr; // get the value inserted in text
+					var ajaxurl = 'getData.php', // script to run
+					data =  {datastr:datastr}; // data to pass
+					$.post(ajaxurl, data, function (response) { // on success run this function which enters input data to the database
+						successCallback(response);
+						//alert(response);
+					});		
+				});
+			
+				// insert values taken from database
+				function successCallback(response){
+					var sheet = spread.getActiveSheet();
+					var totalResponse = response;
+					var responseArr = totalResponse.split(',');
+					var costInt = parseInt(responseArr[0]);
+					
+					//alert(typeof(response));
+					//alert(response.toSource());
+					sheet.setValue(6, 1, costInt);
+					spread.isPaintSuspended(false);
+				}
+				*/
+		
+				<!-- GET THE OUTPUT VALUES AND PUT THEM IN A DATABASE TABLE-->
+				$(document).ready(function(){
+					$('.buttonOutput').click(function(){
+						var sheet = spread.getActiveSheet();
+						var VariableType = sheet.getValue(5, 4); // get value of cell
+						//alert(VariableType);
+						var TotalCost = sheet.getValue(6, 4); // get value of cell
+						//alert(TotalCost);
+						var scenario = datastr; // get the value inserted in text
+						//alert(scenario);
+						var ajaxurl = 'insertData.php', // script to run
+						data =  {datastr:datastr, VariableType:VariableType, TotalCost:TotalCost}; // data to pass
+						$.post(ajaxurl, data, function (response) { // on success run this function which enters input data to the database
+							//successCallback(response);
+							//alert(response);
+						});	
+
+					});
+				});	
+			});
+        });
+		
+
+	</script>	
+	
+	
+	
+	</head>
+	<body>
+		<!-- <button class="buttonOutput" type="submit" name="insert" value="insert">Save Output</button> -->
+		<div id="ss" style="width: 600; height: 400;"></div>
+	</body>
+	</html>

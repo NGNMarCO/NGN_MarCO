@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Reads a JSON file created by the Designer app of Wijmo. Loads the data to a spread sheet (spreadjs). Send requests to the database to get and save more data.  -->
+
+	<!--Wijmo Widgets CSS-->
+    <link href="http://cdn.wijmo.com/themes/aristo/jquery-wijmo.css" rel="stylesheet" type="text/css" />
+
+    <!--SpreadJS Widgets CSS-->
+    <link href="http://cdn.wijmo.com/spreadjs/jquery.wijmo.wijspread.3.20143.15.css" rel="stylesheet" type="text/css" />
+
+    <!--RequireJs-->
+    <script type="text/javascript" src="http://cdn.wijmo.com/external/require.js"></script>
+	
+	<!-- Insert JS function files -->
+	<script type ="text/javascript" src="jsFunctions/validation.js"></script>
+	<script type ="text/javascript" src="jsFunctions/validationLists.js"></script>
+	<script type ="text/javascript" src="jsFunctions/validationManDist.js"></script>
+	
+	
+    <script type="text/javascript">
+        requirejs.config({
+            shim: {
+                "spreadjs": {
+                    deps: ["jquery"],
+                }
+            },
+            paths: {
+                "jquery": "http://code.jquery.com/jquery-1.9.1.min",
+                "spreadjs": "http://cdn.wijmo.com/spreadjs/jquery.wijmo.wijspread.all.3.20143.15.min",
+            },
+        });
+        require(["jquery", "spreadjs"], function () {
+            
+			var spread;
+			var sheet;
+			
+			$(document).ready(function () {
+				$("#ss").wijspread({ sheetCount: 2 });
+				spread = $("#ss").wijspread("spread");
+	
+				// Get active sheet in spread instance
+				//var activeSheet = spread.getActiveSheet();
+				
+				//********************************************************************
+				// MAKE THE SPREADSHEET IN FULL EXTENT ON THE SCREEN
+				var fullHeight = $(document).height();
+				$("#ss").height(fullHeight);
+				spread.scrollbarMaxAlign(true);
+				spread.scrollbarShowMax(true);
+				//********************************************************************
+				//********************************************************************
+				// LOAD VALUES FROM JSON FILE XPORTED FROM DESIGNER APP OF WIJMO
+				$.ajax({
+					url: "json/form.ssjson", // get the json file created by the designer
+					datatype: "json",
+					success: function (data) {
+						//here to load ssjson file.
+						spread.isPaintSuspended(true);
+						spread.fromJSON(JSON.parse(data)); 
+					},
+					error: function (ex) {
+						alert(ex);
+					}
+				});
+				
+				//********************************************************************
+				//********************************************************************
+				// GET VALUES FROM THE FORM AND INSERT THEM IN DATABASE
+				//********************************************************************
+				// CREATE EVENT ON BUTTON SELECT
+				spread.bind($.wijmo.wijspread.Events.ButtonClicked, function (e, args) {
+					sheet = args.sheet, row = args.row, col = args.col;
+					var cellType = sheet.getCellType(row, col);
+					if (cellType instanceof $.wijmo.wijspread.ButtonCellType) {
+		
+					// WHEN BUTTON IS CLICK GET THE DATA FROM THE CELLS AND IMPORT THEM IN DATABASE
+						// GET VALUES FROM CELLS
+						var CentralOffice = sheet.getValue(5,2); 
+						//alert(CentralOffice);
+						var DestributionCenter = sheet.getValue(6,2); 
+						var Method = sheet.getValue(7,2); 
+						var Tech = sheet.getValue(9,2); 
+						var BrownGreen = sheet.getValue(10,2); 
+						var InfustructureType = sheet.getValue(11,2); 
+						var NumSubDucFeeder = sheet.getValue(12,2); 
+						var NumSubDucDistrib = sheet.getValue(13,2); 
+						var CableGranFeeder = sheet.getValue(14,2); 
+						var CableGranDistrib = sheet.getValue(15,2); 
+						
+						// VALUES FOR MANHOLE FEEDER
+						var ManholeFeeder1 = sheet.getValue(16,2); 
+						var ManholeFeeder2 = sheet.getValue(16,3); 
+						var ManholeFeedermaxDist = sheet.getValue(16,4); 
+						var ManholeFeederminDist = sheet.getValue(16,6); 
+						//alert(ManholeFeederminDist);
+						// STORE VALUES IN ARRAY
+						var ManholeFeederArr = [ManholeFeeder1,ManholeFeeder2,ManholeFeedermaxDist,ManholeFeederminDist];
+						//alert(ManholeFeederArr);
+						var ManholeFeederArrStr = ManholeFeederArr.toString();
+						
+						// VALUES FOR MANHOLE DISTRIBUTER
+						var ManholeDistrib1 = sheet.getValue(17,2); 
+						var ManholeDistrib2 = sheet.getValue(17,3); 
+						var ManholeDistrib3 = sheet.getValue(17,4); 
+						var ManholeDistribmaxDist = sheet.getValue(17,5); 
+						var ManholeDistribminDist = sheet.getValue(17,6); 
+						// STORE VALUES IN ARRAY
+						var ManholeDistribArr = [ManholeDistrib1,ManholeDistrib2,ManholeDistrib3,ManholeDistribmaxDist, ManholeDistribminDist ];
+						//alert(ManholeDistribArr);
+						var ManholeDistribArrStr = ManholeDistribArr.toString();
+						
+						var Percentages = sheet.getValue(18,2); 
+						
+						// VALUES FOR SCENARIO NAME
+						
+						var ScenarioName = sheet.getValue(5,9); 
+						
+						// VALUES FOR SCENARIO DESCRIPTION
+						
+						var ScenarioDescription = sheet.getValue(6,9);
+						//alert(ScenarioDescription);
+
+						
+						
+						// ADD VALIDATION FUNCTION
+						validResult = validation(sheet,CentralOffice,DestributionCenter,NumSubDucFeeder,NumSubDucDistrib,CableGranFeeder,CableGranDistrib,Percentages,ManholeFeedermaxDist,ManholeFeederminDist,ManholeDistribmaxDist,ManholeDistribminDist,ScenarioName,ScenarioDescription); // execute function to make validation of the data
+						//alert(validResult);
+						var sum = 0;
+						for (i=0; i<validResult.length; i++){
+						
+							sum = sum + validResult[i];
+						
+						}
+						//alert(sum);
+						
+						if (sum==12){
+							// INSERT VALUES TO DATABASE
+							var ajaxurl = 'insertData.php', // script to run
+							// data to pass
+							data =  {CentralOffice:CentralOffice, DestributionCenter:DestributionCenter, Method:Method, Tech:Tech, BrownGreen:BrownGreen, InfustructureType:InfustructureType, NumSubDucFeeder:NumSubDucFeeder, NumSubDucDistrib:NumSubDucDistrib, CableGranFeeder:CableGranFeeder, CableGranDistrib:CableGranDistrib, ManholeFeederArrStr:ManholeFeederArrStr, ManholeDistribArrStr:ManholeDistribArrStr, Percentages:Percentages, ScenarioName:ScenarioName, ScenarioDescription:ScenarioDescription};
+							$.post(ajaxurl, data, function (response) { // on success run this function which enters input data to the database
+								//successCallback(response);
+								//alert(response);
+							});
+						}
+					}
+				});	
+						
+				
+				
+				//********************************************************************
+				//********************************************************************
+				// GET INPUT DATA FROM DATABASE
+				//********************************************************************
+				// send AJAX request to get data from database
+				var datastr = 'A';
+				$(document).ready(function(){
+					var scenario = datastr; // get the value inserted in text
+					var ajaxurl = 'getData.php', // script to run
+					data =  {datastr:datastr}; // data to pass
+					$.post(ajaxurl, data, function (response) { // on success run this function which enters input data to the database
+						successCallback(response);
+						//alert(response);
+					});		
+				});
+			
+				// insert values taken from database
+				function successCallback(response){
+					var sheet = spread.getActiveSheet();
+					var totalResponse = response;
+					var responseArr = totalResponse.split(',');
+					var costInt = parseInt(responseArr[0]);
+					
+					//alert(typeof(response));
+					//alert(response.toSource());
+					sheet.setValue(6, 1, costInt);
+					spread.isPaintSuspended(false);
+				}
+			
+		
+				
+				
+			});
+        });
+		
+
+	</script>	
+	
+	
+	
+	</head>
+	<body>
+		<div id="ss" style="width: 600; height: 400;"></div>
+	</body>
+	</html>

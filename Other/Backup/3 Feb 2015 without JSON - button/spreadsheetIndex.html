@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+	<!--Ext JS
+    <link rel="stylesheet" type="text/css" href="ext-5.1.0/packages/ext-theme-neptune/build/resources/ext-theme-neptune-all.css">
+    <script type="text/javascript" src="ext-5.1.0/build/ext-all.js"></script>-->
+	<!--Load ExtJS app-->
+    <!-- <script type="text/javascript" src="appEx.js"></script> -->
+	
+	<!--Wijmo Widgets CSS
+    <link href="http://cdn.wijmo.com/themes/aristo/jquery-wijmo.css" rel="stylesheet" type="text/css" />  -->
+   
+   <!--SpreadJS Widgets CSS-->
+    <link href="http://cdn.wijmo.com/spreadjs/jquery.wijmo.wijspread.3.20143.15.css" rel="stylesheet" type="text/css" />
+
+    <!--RequireJs-->
+    <script type="text/javascript" src="http://cdn.wijmo.com/external/require.js"></script>
+
+    <script type="text/javascript">
+        requirejs.config({
+            shim: {
+                "spreadjs": {
+                    deps: ["jquery"],
+                }
+            },
+            paths: {
+                "jquery": "http://code.jquery.com/jquery-1.9.1.min",
+                "spreadjs": "http://cdn.wijmo.com/spreadjs/jquery.wijmo.wijspread.3.20143.15.min",
+            },
+        });
+        require(["jquery", "spreadjs"], function () {
+            $("#ss").wijspread({ sheetCount: 2 });
+            var spread = $("#ss").wijspread("spread");
+            var sheet = spread.getActiveSheet();
+			
+			// STYLING 
+			var cell = sheet.getCells(14, 0, 30, 3);
+			cell.backColor("lightgreen"); // set the background color of the form
+			
+
+			
+			
+			
+	
+			// BUTTON
+			var cellType = new $.wijmo.wijspread.ButtonCellType();
+			cellType.buttonBackColor("#FFFF00");
+			cellType.text("BUTTON"); sheet.getCell(14, 0).font("bold 14px arial");
+			sheet.setCellType(14,0,cellType);
+	
+			
+			
+			
+			
+			spread.bind($.wijmo.wijspread.Events.ButtonClicked, function (e, args) {
+				var sheet = args.sheet, row = args.row, col = args.col;
+				var cellType = sheet.getCellType(row, col);
+				if (cellType instanceof $.wijmo.wijspread.ButtonCellType) {
+					alert("Button Clicked");
+					
+					var x = sheet.getValue(11, 2); // get value of cell
+					//alert(x);
+					
+					var x = sheet.getValue(18, 1); // get value of cell
+					//alert(x);
+					var x = sheet.getValue(19, 1); // get value of cell
+					//alert(x);
+					x = [];
+					for (i=18;i<=29;i++){
+						var l = sheet.getValue(i, 1); // get value of cell
+						alert(l);
+						x.push(l);
+					}
+					alert(x);
+					
+					// INSERT DATA IN DATABASE
+					var VariableType = sheet.getValue(6, 4); // get value of cell
+					var TotalCost = sheet.getValue(7, 4); // get value of cell
+					var scenario = 'A'; // get the value inserted in text
+					//alert(scenario);
+					var ajaxurl = 'insertData.php', // script to run
+					data =  {datastr:datastr, VariableType:VariableType, TotalCost:TotalCost}; // data to pass
+					$.post(ajaxurl, data, function (response) { // on success run this function which enters input data to the database
+						//successCallback(response);
+						//alert(response);
+					});	
+				}
+			});
+			
+			
+			// check box
+			
+			var cellType = new $.wijmo.wijspread.CheckBoxCellType();
+			cellType.caption("1 Junction");
+			//cellType.textTrue("1");
+			cellType.textAlign($.wijmo.wijspread.CheckBoxTextAlign.right);
+
+			sheet.getCell(11, 2).cellType(cellType);
+					
+			// check box for brown/green field
+			
+			var cellType = new $.wijmo.wijspread.CheckBoxCellType();
+			cellType.caption("Brown");
+			//cellType.textTrue("1");
+			cellType.textAlign($.wijmo.wijspread.CheckBoxTextAlign.right);
+			sheet.getCell(24, 1).cellType(cellType);
+			
+			var cellType = new $.wijmo.wijspread.CheckBoxCellType();
+			cellType.caption("Green");
+			//cellType.textTrue("1");
+			cellType.textAlign($.wijmo.wijspread.CheckBoxTextAlign.right);
+			sheet.getCell(24, 2).cellType(cellType);
+			
+			
+			// check box for manhole
+			var cellType = new $.wijmo.wijspread.CheckBoxCellType();
+			cellType.caption("1");
+			//cellType.textTrue("1");
+			cellType.textAlign($.wijmo.wijspread.CheckBoxTextAlign.right);
+			sheet.getCell(27, 1).cellType(cellType);
+			sheet.getCell(28, 1).cellType(cellType);
+			
+			var cellType = new $.wijmo.wijspread.CheckBoxCellType();
+			cellType.caption("2");
+			//cellType.textTrue("1");
+			cellType.textAlign($.wijmo.wijspread.CheckBoxTextAlign.right);
+			sheet.getCell(27, 2).cellType(cellType);
+			sheet.getCell(28, 2).cellType(cellType);
+			
+			var cellType = new $.wijmo.wijspread.CheckBoxCellType();
+			cellType.caption("3");
+			//cellType.textTrue("1");
+			cellType.textAlign($.wijmo.wijspread.CheckBoxTextAlign.right);
+			sheet.getCell(28, 3).cellType(cellType);
+				
+			// dropbox for methods
+			var items2 = ["Method I", "Method II", "Method III", "Method IV", "Method V", "Method VI", "Method VII"];
+			var eComboBoxCellType = new $.wijmo.wijspread.ComboBoxCellType().items(items2).editable(true);
+			sheet.getCell(20, 1).cellType(eComboBoxCellType);
+			sheet.setColumnWidth(0,220);
+			sheet.setColumnWidth(1,220);
+			
+			// dropbox for tech
+			var items2 = ["FTTH", "FTTB", "FFTC"];
+			var eComboBoxCellType = new $.wijmo.wijspread.ComboBoxCellType().items(items2).editable(true);
+			sheet.getCell(23, 1).cellType(eComboBoxCellType);
+			sheet.setColumnWidth(0,220);
+			sheet.setColumnWidth(1,220);
+			
+			// dropbox for infastructure type
+			var items2 = ["Duct/Subduct", "Direct Burried"];
+			var eComboBoxCellType = new $.wijmo.wijspread.ComboBoxCellType().items(items2).editable(true);
+			sheet.getCell(25, 1).cellType(eComboBoxCellType);
+			sheet.setColumnWidth(0,220);
+			sheet.setColumnWidth(1,220);
+			
+			
+			// set form
+			
+			sheet.setValue(16, 0, "Clustering");  sheet.getCell(16, 0).font("bold 16px arial");
+			sheet.setValue(16, 1, "Values"); sheet.getCell(16, 1).font("bold 16px arial");
+			//
+			sheet.setValue(18, 0, "CentralOffices");
+			sheet.setValue(19, 0, "Kafao");
+			sheet.setValue(20, 0, "Method"); // for dropbox with methods
+			
+			
+			sheet.setValue(22, 0, "Σχεδιασμός Δικτύου"); sheet.getCell(22, 0).font("bold 16px arial");
+			sheet.setValue(23, 0, "TECH");
+			sheet.setValue(24, 0, "Brown/Green Field");
+			sheet.setValue(25, 0, "Infastructure Type");
+			
+			sheet.setValue(27, 0, "Manhole Strategy Feeder");
+			sheet.setValue(28, 0, "Manhole Strategy Distribution");
+			
+			
+			//
+			
+			//spread.useWijmoTheme =true; // change theme
+            spread.isPaintSuspended(true);
+
+			sheet.isPaintSuspended(true);
+
+			// insert values manually
+		
+            sheet.setValue(1, 1, "Cost"); //row - columns
+            sheet.setValue(1, 2, "Equipment");
+            sheet.setValue(1, 3, "Pieces");
+            sheet.setValue(1, 4, "Total");
+			sheet.setValue(1, 5, "Sum");
+			
+			sheet.setValue(2, 1, 4); //row - columns
+            sheet.setValue(2, 2, 5);
+            sheet.setValue(2, 3, 6);
+            sheet.setValue(2, 4, 7);
+			
+			sheet.setFormula(2,5, "=SUM(B3:E3)");
+			sheet.setFormula(7,4, "=B8*F3");
+			
+			
+			// send AJAX request to get data from database
+			var datastr = 'A';
+			$(document).ready(function(){
+				var scenario = datastr; // get the value inserted in text
+				var ajaxurl = 'getData.php', // script to run
+				data =  {datastr:datastr}; // data to pass
+				$.post(ajaxurl, data, function (response) { // on success run this function which enters input data to the database
+					successCallback(response);
+					//alert(response);
+				});		
+			});
+			
+			// insert values taken from database
+			 function successCallback(response){
+				var totalResponse = response;
+				var responseArr = totalResponse.split(',');
+				var costInt = parseInt(responseArr[0]);
+				//alert(typeof(response));
+				//alert(response.toSource());
+				sheet.addSpan(6,1,1,2); // merge cellsv
+				sheet.addSpan(7,1,1,2); // merge cells
+				sheet.setValue(6, 1, "Database Cost");
+				sheet.setValue(6, 4, "OutPut");
+				sheet.setValue(7, 1, costInt);
+			}
+			
+            spread.isPaintSuspended(false);
+			
+			
+			<!-- GET THE OUTPUT VALUES AND PUT THEM IN A DATABASE TABLE-->
+			$(document).ready(function(){
+				$('.buttonOutput').click(function(){
+					var VariableType = sheet.getValue(6, 4); // get value of cell
+					var TotalCost = sheet.getValue(7, 4); // get value of cell
+					var scenario = datastr; // get the value inserted in text
+					alert(scenario);
+					var ajaxurl = 'insertData.php', // script to run
+					data =  {datastr:datastr, VariableType:VariableType, TotalCost:TotalCost}; // data to pass
+					$.post(ajaxurl, data, function (response) { // on success run this function which enters input data to the database
+						//successCallback(response);
+						//alert(response);
+					});	
+
+				});
+			});	
+        });
+		
+
+	</script>	
+	
+	
+	
+	
+	
+	
+	</head>
+	<body>
+		<button class="buttonOutput" type="submit" name="insert" value="insert">Save Output</button>
+		<div id="ss" style="width: 1573px; height: 494px;"></div>
+	</body>
+	</html>

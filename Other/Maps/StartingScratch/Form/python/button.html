@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Reads a JSON file created by the Designer app of Wijmo. Loads the data to a spread sheet (spreadjs). Send requests to the database to get and save more data.  -->
+
+	<!--Wijmo Widgets CSS-->
+    <link href="http://cdn.wijmo.com/themes/aristo/jquery-wijmo.css" rel="stylesheet" type="text/css" />
+
+    <!--SpreadJS Widgets CSS-->
+    <link href="http://cdn.wijmo.com/spreadjs/jquery.wijmo.wijspread.3.20143.15.css" rel="stylesheet" type="text/css" />
+
+    <!--RequireJs-->
+    <script type="text/javascript" src="http://cdn.wijmo.com/external/require.js"></script>
+	
+
+	
+	
+    <script type="text/javascript">
+        requirejs.config({
+            shim: {
+                "spreadjs": {
+                    deps: ["jquery"],
+                }
+            },
+            paths: {
+                "jquery": "http://code.jquery.com/jquery-1.9.1.min",
+                "spreadjs": "http://cdn.wijmo.com/spreadjs/jquery.wijmo.wijspread.all.3.20143.15.min",
+            },
+        });
+        require(["jquery", "spreadjs"], function () {
+			$(document).ready(function(){    
+				$('#id').click(function(){
+					$.ajax({
+					type: "POST",
+					url: "test.py",
+					}).done(function( o ) {
+					// do something
+					});				
+				});
+			});
+        });
+		
+
+	</script>	
+	
+	
+	
+	</head>
+	<body>
+		<button type="button" id="id"  value="checkvalue">Run Python </button>
+	</body>
+	</html>
