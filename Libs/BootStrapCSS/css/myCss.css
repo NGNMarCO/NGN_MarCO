@@ -1,0 +1,16 @@
+/*!
+ * My CSS
+ * 
+ * 
+ */
+
+/* CSS for the progress bar  */
+.progress-label {
+		float: left;
+		margin-right: 1em;
+}
+   
+/* CSS for the alert box around the progress bar  */    
+.alert {
+    height:54px;    
+}
