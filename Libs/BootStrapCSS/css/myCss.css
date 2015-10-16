@@ -14,3 +14,50 @@
 .alert {
     height:54px;    
 }
+
+/*For the modal position */
+#myModal {
+top:5%;
+bottom: 5%;
+right:50%;
+outline: none;
+max-height:100%; 
+}
+
+
+/*For the svg shape inside the modal -  position it left and right */
+#leftColumnSvg{
+  width: 200px;
+  float: left;
+}
+#rightColumnSvg{
+  width: 100px;
+  margin-left: 300px;
+}
+
+
+/* For the text which is appeared when you select a textbox inside the module */
+#toggleTextModule, #toggleTextModule_2{
+  display: none;
+}
+
+
+/* Clear button inside CSS */
+#clearCssModal{
+    margin-left: 400px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

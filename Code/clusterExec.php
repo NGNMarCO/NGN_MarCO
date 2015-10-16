@@ -12,9 +12,12 @@ include '_postgresConnect.php';
 # PASS VARIABLES FROM FORM
 $numberOfClusters = $_POST['numberOfClusters'];
 $shapeFilePath = $_POST['shapeFilePath'];
+$PercentageOfCoverageDHN = $_POST['PercentageOfCoverageDHN'];
+$COname = $_POST['COname'];
+$scenarioName = $_POST['scenarioName'];
 
 // EXECUTE THE PYTHON SCRIPT WHICH MAKES THE CLUSTERING AND THE NETWORK DESIGN (THANASIS CODE)
-$command = "python ./python/clusterModule.py $numberOfClusters $shapeFilePath";
+$command = "python ./python/clusterModule.py $numberOfClusters $shapeFilePath $PercentageOfCoverageDHN $COname $scenarioName";
 exec($command,$out,$ret);
 print_r($out);
 //print_r($ret);

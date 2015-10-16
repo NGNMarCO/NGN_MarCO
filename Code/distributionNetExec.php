@@ -21,9 +21,11 @@ $mhn_cost = $_POST['mhn_cost'];
 $PercentageOfCoverageDHN = $_POST['PercentageOfCoverageDHN'];
 $mhn_c_l = $_POST['mhn_c_l'];
 $d = $_POST['d']; // type of strategy
+$COname = $_POST['COname'];
+$scenarioName = $_POST['scenarioName'];
 
 // EXECUTE THE PYTHON SCRIPT WHICH MAKES THE CLUSTERING AND THE NETWORK DESIGN (THANASIS CODE)
-$command = "python ./python/distributionNetModule.py $numberOfClusters $shapeFilePath $capList $cap_list_cost $KVcost $lmin $lmax $mhn_cost $PercentageOfCoverageDHN $mhn_c_l $d";
+$command = "python ./python/distributionNetModule.py $numberOfClusters $shapeFilePath $capList $cap_list_cost $KVcost $lmin $lmax $mhn_cost $PercentageOfCoverageDHN $mhn_c_l $d $COname $scenarioName";
 
 exec($command,$out,$ret);
 print_r($out);

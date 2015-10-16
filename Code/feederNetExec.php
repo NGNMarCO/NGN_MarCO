@@ -20,10 +20,13 @@ $lmaxFeeder = $_POST['lmaxFeeder'];
 $mhn_costFeeder = $_POST['mhn_costFeeder'];
 $mhn_c_l_feeder = $_POST['mhn_c_l_feeder'];
 $d = $_POST['d_feeder'];
+$PercentageOfCoverageDHN = $_POST['PercentageOfCoverageDHN'];
+$COname = $_POST['COname'];
+$scenarioName = $_POST['scenarioName'];
 
 
 // EXECUTE THE PYTHON SCRIPT WHICH MAKES THE CLUSTERING AND THE NETWORK DESIGN (THANASIS CODE)
-$command = "python ./python/centralOfficeModule.py $numberOfClusters $shapeFilePath $capListFeeder $capListCostFeeder $CentralOfficecost $lminFeeder $lmaxFeeder $mhn_costFeeder $mhn_c_l_feeder $d";
+$command = "python ./python/centralOfficeModule.py $numberOfClusters $shapeFilePath $capListFeeder $capListCostFeeder $CentralOfficecost $lminFeeder $lmaxFeeder $mhn_costFeeder $mhn_c_l_feeder $d $PercentageOfCoverageDHN $COname $scenarioName";
 exec($command,$out,$ret);
 
 print_r($out);
