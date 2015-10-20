@@ -116,7 +116,7 @@ place each row and column in the excel spreadjs-->
     <script type="text/javascript" src="http://cdn.wijmo.com/external/require.js"></script>
 	
 	
-	<script type="text/javascript">
+<script type="text/javascript">
         requirejs.config({
             shim: {
                 "spreadjs": {
@@ -125,46 +125,46 @@ place each row and column in the excel spreadjs-->
             },
             paths: {
                 "jquery": "http://code.jquery.com/jquery-1.9.1.min",
-                "spreadjs": "http://cdn.wijmo.com/spreadjs/jquery.wijmo.wijspread.3.20143.15.min",
+                "spreadjs": "http://cdn.wijmo.com/spreadjs/jquery.wijmo.wijspread.all.3.20143.15.min",
             },
         });
         require(["jquery", "spreadjs"], function () {
-				$("#ss").wijspread();
-				spread = $("#ss").wijspread("spread");	
-                $(document).ready(function() {
-                    $.ajax({
-                        type: "GET",
-                        url: "Code/python/csv/outputMetrics.csv",
-                        dataType: "text",
-                        success: function(data){ // on succes loop through the lines of CSV
-                        // and pass data into spead sheet.
-                            var allLines = data.split('\n');
-                            var metricsSheet = spread.getActiveSheet();
-                            // set column width of columns
-                            metricsSheet.setColumnWidth (1,100);
-                            metricsSheet.setColumnWidth (2,100);
-                            metricsSheet.setColumnWidth (3,200);
-                            metricsSheet.setColumnWidth (4,200);
-                            metricsSheet.setColumnWidth (5,100);
-                            metricsSheet.setColumnWidth (6,100);
-                            for (var i=0; i<allLines.length; i++) {
-                                var data = allLines[i].split(';');
-                                metricsSheet.setValue(i+1, 1, data[0]);
-                                metricsSheet.setValue(i+1, 2, data[1]);
-                                metricsSheet.setValue(i+1, 3, data[2]);
-                                metricsSheet.setValue(i+1, 4, data[3]);
-                                metricsSheet.setValue(i+1, 5, data[4]);
-                                metricsSheet.setValue(i+1, 6, data[5]);
-                            }
-                            spread.isPaintSuspended(false);
-                        },
-                        error: function(){
-                            alert("Error reading CSV or passing data to Excel");
-                        }
-                    });
-                });   
+            
+			
+			
+			$(document).ready(function () {
+				//Create a spread instance on DIV element which id is 'spreadContainer'
+				$("#ss").wijspread({ sheetCount: 14 });
+				// Obtain spread instance
+				var spread = $("#ss").wijspread("spread");
+				// Get active sheet in spread instance
+				var activeSheet = spread.getActiveSheet();
+				
+				
+				// LOAD VALUES FROM JSON FILE XPORTED FROM DESIGNER APP OF WIJMO
+				$.ajax({
+					//url: "Rural_BP.ssjson",  
+                    url: "master.ssjson", 
+					datatype: "json",
+					success: function (data) {
+
+						//here to load ssjson file.
+						spread.isPaintSuspended(true);
+						spread.fromJSON(JSON.parse(data));
+						spread.isPaintSuspended(false);
+					},
+					error: function (ex) {
+						alert(ex);
+					}
+				});
+			
+
+
+			});
         });
-	</script>
+		
+
+	</script>	
 	
 </body>
 </html>

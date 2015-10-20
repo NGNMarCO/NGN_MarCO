@@ -1,0 +1,149 @@
+
+The following programming languages, third-party libraries and webdevelopment tools were used to create the
+application:
+
+ - Python 2.7
+ - PHP 5.5
+ - NetworkX 1.9.0
+ - JQuery 1.9
+ - BootstrapCSS
+ - SpreadJS 3.20143.15
+ - OpenLayers 2.12
+ - Geoserver 2.6
+ - PostgreSQL 9.1.13 with PostGIS extension
+ - Ajax, SVG
+
+The algorithm is seperated in three distinctive parts as follows:
+
+1) Clustering Part
+2) Calculation and design of the Distribution Network Part
+3) Calculation and design of the Feeder Network Part
+
+Clustering Part:
+
+
+One of the main requirements of the clustering algorithm was to create equally populated clusters of
+the area of interest. In order to accomplish the above, different clustering approaches were implemented.
+
+Initially a K-means clustering, which uses Euclidean distance to create clusters, was created. 
+The drawback of this method is, that fails to give satifying results in case of existance of physical 
+obstacles in the area of interest. For example if there is a lake in between two points A and B, 
+point B might be close to point A, in Euclidean distance, but far away from it in "shortest path" distance.
+Thus, placing point B in the same cluster,which point A belongs might not be desirable.
+
+Alternatively implementing a clustering method, which uses only shortest path to generate
+the clusters its a computationally expensive process.
+
+Finally the clustering process, which was implemented uses a combination of Euclidean and shortest path 
+distance. The steps of the algorithm are the following:
+
+a. Initially he uses Kmeans clustering in order to create the clusters.
+The output of the algorithm is the center coordinates of each cluster. 
+
+b. Upon finding the center of each cluster the algorithm uses “networkx shortest path” algorithm from 
+the center of the cluster to all the other nodes of the same cluster. 
+It calculates the distances and saves them in a list together with the corresponding population of the building. 
+Then it sorts the list from minimum to maximum distance and it starts “re-defining” the cluster 
+by adding the population of the list (starting by the minimum distances) till it reaches a pre-specified population 
+threshold.
+
+The above method returns saitsfying results and solves the issue with the physical obstacles existing a city,
+while it has very low run times.
+
+The input parameters for the clustering algorithm are the following:
+
+a. The path to the shapefile of the area of interest (e.g. part of a city).
+b. The number of families living in this area (or number of flats).
+c. The number of users, which can be served by a distribution hub.
+
+The algorithm outputs the following:
+
+ - Shape files with the generated clusters.
+ - Coordinates of the points of the clusters.
+
+Calculation and design of the Distribution Network Part
+
+The next step is to find the most suitable (cost-wise related) locations to install the distribution hubs for each cluster.
+Upon finding the appropriate points, an algorith, which designs the network and calculates all the capex costs
+is executed.
+
+This process is executed seperately for each cluster and it has seven discrete steps as follows:
+ 
+a. In the first step the whole graph is divided into three subparts. For each part the Network Design functions will 
+be executed.
+
+b. In the second step the graph is transformed from undirected to directed.
+
+c.  The third step can be divided into three subparts. Initially the total amount of required fibers are calculated.
+    Then, this number is distributed accordingly on the network. Last the required subduct type for each part of the
+    network (edge) is calculated.
+    
+d. In the fourth step the cost of each edge is calculated (based on the type, the length and the cost per meter).
+e. In the fifth step the the required number of splice boxes for the distribution hub is calculated.
+f. In the sixth step the agorithm calculates the most appropriate locations to place the manholes.
+g. In the seventh step the algorithm calculates the costs of the network.
+
+The input parameters of the Distribution Network Part are the following:
+
+ - The clusters, which are generated in part I.
+ - The cost of the Distribution Hub.
+ - The percentage of area coverage.
+ - The cable granularity and the subduct granularity.
+ - The corresponding costs of the cable and the ubduct granularity.
+ - The manhole cost and the manhole strategy to be used.
+ - The minimum and maximum distance between the manholes. 
+ 
+The algorithm outputs the following:
+
+ - Shape files with the generated distribution network.
+ - A report with the total amount of costs for the construction of the distribution network.
+
+
+
+Calculation and design of the Feeder Network Part
+
+The above described process is repeated for calculating the most suitable location for the Central Office.
+In this case the leaves are the KVs (not the buildings) and instead of population we use the number of splices of each KV.	
+
+The input parameters are:
+
+ - The clusters, which are generated in part I.
+ - The cost of the Central Office.
+ - The cable granularity and the subduct granularity.
+ - The corresponding costs of the cable and the ubduct granularity.
+ - The manhole cost and the manhole strategy to be used.
+ - The minimum and maximum distance between the manholes. 
+ 
+ The algorithm outputs the following:
+
+ - Shape files with the generated feeder network.
+ - A report with the total amount of costs for the construction of the feeder network.
+
+
+
+
+
+
+Installation of the software:
+
+ - Download from GitHub the project (https://github.com/NGNMarCO/NGN_MarCO)
+ - Place the files in a folder in the server with the name "MarCO".
+ - Create a database for the project in PostgreSQL (with enabled PostGIS extension). Give the 
+ following name in the database: "esoteriko".
+ - Create a php file with the name: "_postgresConnect.php" and place it in Code/ folder.
+   Inside the file include the following:
+   <?php
+//**************************************************************
+//*	Connect to Postgres												       												       
+//**************************************************************
+ini_set('display_errors', 1); 
+$dbconn = pg_connect("host=yourHOST (e.g. localhost) port=**** dbname=esoteriko user=userName password=yourPass") or die('Could not connect: ' . pg_last_error());
+if (!$dbconn) {
+  echo "An error occurred.\n";
+  exit;
+}
+?>
+
+- Open the browser (prefered Chorme or Firefox) and go to: http://"host_name"/MarCO/_indexx.php
+
+
