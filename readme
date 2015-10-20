@@ -1,3 +1,4 @@
+-- Programming Languages & Libraries --
 
 The following programming languages, third-party libraries and webdevelopment tools were used to create the
 application:
@@ -13,14 +14,18 @@ application:
  - PostgreSQL 9.1.13 with PostGIS extension
  - Ajax, SVG
 
+
+-- Algorithm Parts --
+
 The algorithm is seperated in three distinctive parts as follows:
 
 1) Clustering Part
 2) Calculation and design of the Distribution Network Part
 3) Calculation and design of the Feeder Network Part
 
-Clustering Part:
 
+
+1) Clustering Part:
 
 One of the main requirements of the clustering algorithm was to create equally populated clusters of
 the area of interest. In order to accomplish the above, different clustering approaches were implemented.
@@ -47,21 +52,21 @@ Then it sorts the list from minimum to maximum distance and it starts “re-defi
 by adding the population of the list (starting by the minimum distances) till it reaches a pre-specified population 
 threshold.
 
-The above method returns saitsfying results and solves the issue with the physical obstacles existing a city,
+The above method returns saitsfying results and solves the issue with the physical obstacles existing in a city,
 while it has very low run times.
 
 The input parameters for the clustering algorithm are the following:
 
-a. The path to the shapefile of the area of interest (e.g. part of a city).
-b. The number of families living in this area (or number of flats).
-c. The number of users, which can be served by a distribution hub.
+ - The path to the shapefile of the area of interest (e.g. part of a city).
+ - The number of families living in this area (or number of flats).
+ - The number of users, which can be served by a distribution hub.
 
 The algorithm outputs the following:
 
  - Shape files with the generated clusters.
  - Coordinates of the points of the clusters.
 
-Calculation and design of the Distribution Network Part
+2) Calculation and design of the Distribution Network Part
 
 The next step is to find the most suitable (cost-wise related) locations to install the distribution hubs for each cluster.
 Upon finding the appropriate points, an algorith, which designs the network and calculates all the capex costs
@@ -79,7 +84,7 @@ c.  The third step can be divided into three subparts. Initially the total amoun
     network (edge) is calculated.
     
 d. In the fourth step the cost of each edge is calculated (based on the type, the length and the cost per meter).
-e. In the fifth step the the required number of splice boxes for the distribution hub is calculated.
+e. In the fifth step the required number of splice boxes for the distribution hub is calculated.
 f. In the sixth step the agorithm calculates the most appropriate locations to place the manholes.
 g. In the seventh step the algorithm calculates the costs of the network.
 
@@ -95,12 +100,11 @@ The input parameters of the Distribution Network Part are the following:
  
 The algorithm outputs the following:
 
- - Shape files with the generated distribution network.
+ - Shapefiles with the generated distribution network.
  - A report with the total amount of costs for the construction of the distribution network.
 
 
-
-Calculation and design of the Feeder Network Part
+3)Calculation and design of the Feeder Network Part
 
 The above described process is repeated for calculating the most suitable location for the Central Office.
 In this case the leaves are the KVs (not the buildings) and instead of population we use the number of splices of each KV.	
@@ -120,18 +124,14 @@ The input parameters are:
  - A report with the total amount of costs for the construction of the feeder network.
 
 
+-- Instructions for Installation of the software --
 
-
-
-
-Installation of the software:
-
- - Download from GitHub the project (https://github.com/NGNMarCO/NGN_MarCO)
+ - Download from GitHub the project (https://github.com/NGNMarCO/NGN_MarCO).
  - Place the files in a folder in the server with the name "MarCO".
- - Create a database for the project in PostgreSQL (with enabled PostGIS extension). Give the 
- following name in the database: "esoteriko".
- - Create a php file with the name: "_postgresConnect.php" and place it in Code/ folder.
+ - Create a database for the project in PostgreSQL (with enabled PostGIS extension). Give the following name in the database: "esoteriko".
+ - Create a php file with the name: "_postgresConnect.php" and place it in "MarCO/Code/" folder.
    Inside the file include the following:
+   
    <?php
 //**************************************************************
 //*	Connect to Postgres												       												       
@@ -144,6 +144,6 @@ if (!$dbconn) {
 }
 ?>
 
-- Open the browser (prefered Chorme or Firefox) and go to: http://"host_name"/MarCO/_indexx.php
+- Open the browser (prefered Chorme or Firefox) and link to: http://"host_name"/MarCO/_indexx.php
 
 
